@@ -1,0 +1,18 @@
+/* 
+  Localizable.strings
+  FindMe
+
+  Created by Sébastien Brugalières on 07/09/2017.
+  Copyright © 2017 Sébastien Brugalières. All rights reserved.
+*/
+
+"Warning" = "Warning";
+"Warning_Too_Many_EdgePin" = "You cannot add more than 3 annotations on the map.\nYou can move existing annotations on the Map or reset map from Editor tab.";
+"Close" = "Close";
+"Unknown_Error" = "Unknown error";
+"No_Address" = "unknown address";
+"Center" = "Center";
+"Triangle" = "Triangle";
+"Latitude" = "Latitude";
+"Longitude" = "Longitude";
+"Center_Not_Exist" = "Center doesn't exist";

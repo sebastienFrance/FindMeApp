@@ -1,0 +1,48 @@
+
+/* Class = "UILabel"; text = "coordinates"; ObjectID = "067-vT-MmX"; */
+"067-vT-MmX.text" = "coordonnées";
+
+/* Class = "UILabel"; text = "Latitude"; ObjectID = "2Oj-gf-qZx"; */
+"2Oj-gf-qZx.text" = "Latitude";
+
+/* Class = "UILabel"; text = "Longitude"; ObjectID = "2vR-wc-PFO"; */
+"2vR-wc-PFO.text" = "Longitude";
+
+/* Class = "UILabel"; text = "Address"; ObjectID = "3wi-SP-Hd8"; */
+"3wi-SP-Hd8.text" = "Adresse";
+
+/* Class = "UILabel"; text = "Latitude"; ObjectID = "AcI-jL-ZFW"; */
+"AcI-jL-ZFW.text" = "Latitude";
+
+/* Class = "UITextField"; placeholder = "Enter distance in kilometers"; ObjectID = "Eth-jR-HJy"; */
+"Eth-jR-HJy.placeholder" = "Entrez la distance en kilomètres";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "Ipc-OM-9SK"; */
+"Ipc-OM-9SK.text" = "Label";
+
+/* Class = "UITabBarItem"; title = "Editor"; ObjectID = "KW9-ui-Gfz"; */
+"KW9-ui-Gfz.title" = "Éditeur";
+
+/* Class = "UILabel"; text = "Latitude"; ObjectID = "NQh-RF-WAv"; */
+"NQh-RF-WAv.text" = "Latitude";
+
+/* Class = "UITabBarItem"; title = "World"; ObjectID = "Oga-A8-uAQ"; */
+"Oga-A8-uAQ.title" = "Carte";
+
+/* Class = "UILabel"; text = "Longitude"; ObjectID = "eCN-Hj-qdD"; */
+"eCN-Hj-qdD.text" = "Longitude";
+
+/* Class = "UILabel"; text = "Longitude"; ObjectID = "jTU-aQ-zt9"; */
+"jTU-aQ-zt9.text" = "Longitude";
+
+/* Class = "UILabel"; text = "Longitude"; ObjectID = "pV7-Sb-yLg"; */
+"pV7-Sb-yLg.text" = "Longitude";
+
+/* Class = "UILabel"; text = "Distance"; ObjectID = "u4A-zq-0WU"; */
+"u4A-zq-0WU.text" = "Distance";
+
+/* Class = "UIBarButtonItem"; title = "Reset"; ObjectID = "uUv-q4-zuy"; */
+"uUv-q4-zuy.title" = "Réinitialiser";
+
+/* Class = "UILabel"; text = "From"; ObjectID = "ylT-4K-YXx"; */
+"ylT-4K-YXx.text" = "De";
