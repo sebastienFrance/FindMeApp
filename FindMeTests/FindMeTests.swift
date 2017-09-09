@@ -43,23 +43,23 @@ class FindMeTests: XCTestCase {
         
         NSLog("\n--------------------------------")
         let dist = FindMeTests.Paris.distance(p:FindMeTests.Moscou)
-        NSLog("distance :paris-moscou=\(dist)")
+        NSLog("distance :paris-moscou=\(dist/1000) km")
         // result : distance :paris-moscou=2486.5941557741317
         
         
         NSLog("\n--------------------------------")
         let d1 = FindMeTests.Paris.distance(p:FindMeTests.NewYork)
-        NSLog("distance paris-NY :\(d1)")
+        NSLog("distance paris-NY :\(d1/1000)km")
         let d2 = FindMeTests.Rio.distance(p:FindMeTests.NewYork)
-        NSLog("distance rio-NY :\(d2)")
+        NSLog("distance rio-NY :\(d2/1000)km")
         let d3 = FindMeTests.Moscou.distance(p:FindMeTests.NewYork)
-        NSLog("distance moscou-NY :\(d3)")
+        NSLog("distance moscou-NY :\(d3/1000)km")
         NSLog("\n--------------------------------")
-        let ny = Point.pointAt(p1:FindMeTests.Paris, dist1:d1+10, p2:FindMeTests.Rio, dist2:d2+10, p3:FindMeTests.Moscou, dist3:d3+10)
-        XCTAssertNotNil(ny)
-        let result = Point.distance(p1:ny!, p2:FindMeTests.NewYork)
-        NSLog("le point qui est a :\(d1)km de Paris, \(d2)km de Rio, \(d3)km de Moscou est :\(ny!.toString()) qui est cense etre Newyork :\(FindMeTests.NewYork.toString())")
-        NSLog("distance entre le point calcule et le vrai point (NY) :\(result)")
+        let points = Point.pointAt(p1:FindMeTests.Paris, dist1:d1, p2:FindMeTests.Rio, dist2:d2, p3:FindMeTests.Moscou, dist3:d3)
+        XCTAssertNotNil(points.center)
+        let result = points.center!.distance(p:FindMeTests.NewYork)
+        NSLog("le point qui est a :\(d1/1000)km de Paris, \(d2/1000)km de Rio, \(d3/1000)km de Moscou est :\(points.center!.toString()) qui est cense etre New-York :\(FindMeTests.NewYork.toString())")
+        NSLog("distance entre le point calcule et le vrai point (NY) :\(result / 1000)km")
 
     }
     

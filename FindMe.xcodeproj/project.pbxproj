@@ -20,9 +20,10 @@
 		BE3480F71F4DF26F006A528F /* FindMeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE3480F61F4DF26F006A528F /* FindMeTests.swift */; };
 		BE3481021F4DF26F006A528F /* FindMeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE3481011F4DF26F006A528F /* FindMeUITests.swift */; };
 		BE3481101F4DF588006A528F /* FindMeMapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE34810F1F4DF588006A528F /* FindMeMapViewController.swift */; };
+		BE3D2EED1F64363000D2F80C /* EdgeToCenterPolyline.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE3D2EEC1F64363000D2F80C /* EdgeToCenterPolyline.swift */; };
 		BE3E9A991F4DFE7400F9CAFC /* DistanceConfigurationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE3E9A981F4DFE7400F9CAFC /* DistanceConfigurationTableViewCell.swift */; };
 		BE3E9A9B1F4E017D00F9CAFC /* EdgePin.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE3E9A9A1F4E017D00F9CAFC /* EdgePin.swift */; };
-		BE533CA31F51AD3800CB2E1C /* FindMeItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE533CA21F51AD3800CB2E1C /* FindMeItem.swift */; };
+		BE533CA31F51AD3800CB2E1C /* TriangulationDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE533CA21F51AD3800CB2E1C /* TriangulationDS.swift */; };
 		BE533CA51F51DB1500CB2E1C /* CenterPin.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE533CA41F51DB1500CB2E1C /* CenterPin.swift */; };
 		BE533CA71F51E14B00CB2E1C /* EdgeCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE533CA61F51E14B00CB2E1C /* EdgeCircle.swift */; };
 		BE5A7FA41F52DC2700C18FDC /* CenterTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE5A7FA31F52DC2700C18FDC /* CenterTableViewCell.swift */; };
@@ -68,9 +69,10 @@
 		BE3481011F4DF26F006A528F /* FindMeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindMeUITests.swift; sourceTree = "<group>"; };
 		BE3481031F4DF26F006A528F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BE34810F1F4DF588006A528F /* FindMeMapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindMeMapViewController.swift; sourceTree = "<group>"; };
+		BE3D2EEC1F64363000D2F80C /* EdgeToCenterPolyline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeToCenterPolyline.swift; sourceTree = "<group>"; };
 		BE3E9A981F4DFE7400F9CAFC /* DistanceConfigurationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DistanceConfigurationTableViewCell.swift; sourceTree = "<group>"; };
 		BE3E9A9A1F4E017D00F9CAFC /* EdgePin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgePin.swift; sourceTree = "<group>"; };
-		BE533CA21F51AD3800CB2E1C /* FindMeItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindMeItem.swift; sourceTree = "<group>"; };
+		BE533CA21F51AD3800CB2E1C /* TriangulationDS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TriangulationDS.swift; sourceTree = "<group>"; };
 		BE533CA41F51DB1500CB2E1C /* CenterPin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CenterPin.swift; sourceTree = "<group>"; };
 		BE533CA61F51E14B00CB2E1C /* EdgeCircle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeCircle.swift; sourceTree = "<group>"; };
 		BE5A7FA31F52DC2700C18FDC /* CenterTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CenterTableViewCell.swift; sourceTree = "<group>"; };
@@ -128,6 +130,7 @@
 				BE2CEA721F5B22AC00EE418D /* CenterPinViewAnnotation.swift */,
 				BE0BD9141F54AB3600EDD0EA /* TrianglePin.swift */,
 				BE2CEA741F5B232400EE418D /* TrianglePinAnnotationView.swift */,
+				BE3D2EEC1F64363000D2F80C /* EdgeToCenterPolyline.swift */,
 			);
 			path = MapAnnotations;
 			sourceTree = "<group>";
@@ -165,7 +168,7 @@
 				BE5907B41F5BFD8200B18756 /* DistanceTab */,
 				BE9AF7C71F50A11B004C8760 /* Utils */,
 				BE34810F1F4DF588006A528F /* FindMeMapViewController.swift */,
-				BE533CA21F51AD3800CB2E1C /* FindMeItem.swift */,
+				BE533CA21F51AD3800CB2E1C /* TriangulationDS.swift */,
 			);
 			path = FindMe;
 			sourceTree = "<group>";
@@ -349,8 +352,9 @@
 				BE3481101F4DF588006A528F /* FindMeMapViewController.swift in Sources */,
 				BE0BD9151F54AB3600EDD0EA /* TrianglePin.swift in Sources */,
 				BE5A7FA41F52DC2700C18FDC /* CenterTableViewCell.swift in Sources */,
-				BE533CA31F51AD3800CB2E1C /* FindMeItem.swift in Sources */,
+				BE533CA31F51AD3800CB2E1C /* TriangulationDS.swift in Sources */,
 				BE2CEA751F5B232400EE418D /* TrianglePinAnnotationView.swift in Sources */,
+				BE3D2EED1F64363000D2F80C /* EdgeToCenterPolyline.swift in Sources */,
 				BE3480E21F4DF26F006A528F /* AppDelegate.swift in Sources */,
 				BE533CA71F51E14B00CB2E1C /* EdgeCircle.swift in Sources */,
 			);

@@ -16,3 +16,6 @@
 "Latitude" = "Latitude";
 "Longitude" = "Longitude";
 "Center_Not_Exist" = "Le center n'existe pas";
+"Section_SourcePoints" = "Vos points géographique";
+"Section_TriangulationResult" = "Triangulation";
+"Section_TriangleCoordinates" = "Coordonnées triangulation";

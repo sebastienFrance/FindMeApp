@@ -18,7 +18,7 @@ class CenterPinViewAnnotation: MKMarkerAnnotationView {
                 glyphTintColor = UIColor.white
                 glyphImage = #imageLiteral(resourceName: "Star Filled-40")
                 markerTintColor = UIColor.green
-                isDraggable = false
+                isDraggable = true
                 canShowCallout = true
                 displayPriority = .required
             }

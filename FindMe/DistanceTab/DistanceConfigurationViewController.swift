@@ -24,28 +24,19 @@ class DistanceConfigurationViewController: UIViewController {
         }
     }
     
+    // Active TextField when the Keyboard is displayed
     var activeTextField: UITextField?
     
-    var findMe:FindMeItem = FindMeItem.sharedInstance
-
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-    }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         registerKeyboardNotifications()
-        theTableView.reloadData() // Table content may have changed when the map was display => Must refresh the tableVie
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
+        // Table content may have changed when the map was display => Must refresh the tableView
+        theTableView.reloadData()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
         deRegisterKeyboardNotifications()
     }
     
@@ -66,15 +57,21 @@ class DistanceConfigurationViewController: UIViewController {
         NotificationCenter.default.removeObserver(self, name: .UIKeyboardDidHide, object: self.view.window)
     }
     
+    
+    /// Scroll the tableView when the Keyboard is displayed (when needed)
+    ///
+    /// - Parameter notification: notification when the keyboard is raised
     @objc func keyboardWillShow(notification: NSNotification) {
+        
+        // Extract the Keyboard size
         
         let info = notification.userInfo! as NSDictionary
         let value = info.value(forKey: UIKeyboardFrameBeginUserInfoKey) as! NSValue
         let keyboardSize = value.cgRectValue.size
-        let value2 = info.value(forKey: UIKeyboardFrameEndUserInfoKey) as! NSValue
-        let keyboardSize2 = value2.cgRectValue.size
-        NSLog("\(keyboardSize) \(keyboardSize2)")
-        let contentInsets = UIEdgeInsetsMake(0.0, 0.0, keyboardSize2.height, 0.0)
+        let valueHeight = info.value(forKey: UIKeyboardFrameEndUserInfoKey) as! NSValue
+        let keyboardForHeight = valueHeight.cgRectValue.size
+
+        let contentInsets = UIEdgeInsetsMake(0.0, 0.0, keyboardForHeight.height, 0.0)
         theTableView.contentInset = contentInsets
         theTableView.scrollIndicatorInsets = contentInsets
         
@@ -88,14 +85,22 @@ class DistanceConfigurationViewController: UIViewController {
         
     }
     
+    
+    /// Reset the tableview scroll when the Keyboard is hidden
+    ///
+    /// - Parameter notification: notification when the keyboard is hidden
     @objc func keyboardWillHide(notification: NSNotification) {
         theTableView.contentInset = .zero
         theTableView.scrollIndicatorInsets = .zero
     }
     
+    
+    /// Reset the whole application when the user has pressed the reset button
+    ///
+    /// - Parameter sender: event
     @IBAction func resetButtonPressed(_ sender: UIBarButtonItem) {
-        findMe.reset()
-        FindMeMapViewController.sharedInstance.updateMapDisplay()
+        TriangulationDS.sharedInstance.reset()
+        FindMeMapViewController.sharedInstance.refreshMapContent()
         theTableView.reloadData()
     }
     
@@ -114,32 +119,43 @@ extension DistanceConfigurationViewController : UITextFieldDelegate {
     }
 
     
+    /// Update the distance of the edgePin with the new value
+    /// and refresh the Map with the new values.
+    /// The Keyboard is removed from the screen
+    ///
+    /// - Parameter textField: <#textField description#>
     func textFieldDidEndEditing(_ textField: UITextField) {
-        NSLog("\(#function) : \(textField.text!) for \(textField.tag)")
         
-        findMe.edgePoints[textField.tag].distance = Double(textField.text!)!
+        TriangulationDS.sharedInstance.edgePoints[textField.tag].distance = Double(textField.text!)!
         
-        FindMeMapViewController.sharedInstance.updateMapDisplay()
+        FindMeMapViewController.sharedInstance.refreshMapContent()
         theTableView.reloadData()
         
         resignFirstResponder()
-        
         activeTextField = nil
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        NSLog("\(#function) : \(textField.text!) for \(textField.tag)")
         textField.resignFirstResponder()
         return true
     }
 }
 
 extension DistanceConfigurationViewController: UITableViewDelegate {
+    
+    
+    /// Initialize the Marker displayed in the cell. MKMarkerAnnotationView cannot be
+    /// initialized correctly in the tableview(cellForRowAt) else it doesn't display correctly
+    ///
+    /// - Parameters:
+    ///   - tableView: the tableview
+    ///   - cell: the cell
+    ///   - indexPath: index of the cell to update
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         switch indexPath.section {
         case SectionId.edgePoints:
             if let theCell = cell as? DistanceConfigurationTableViewCell {
-                theCell.theMarker.initWith(edgePin:findMe.edgePoints[indexPath.row])
+                theCell.theMarker.initWith(edgePin:TriangulationDS.sharedInstance.edgePoints[indexPath.row])
             }
         case SectionId.triangulationResult:
             if indexPath.row == 0 {
@@ -148,7 +164,7 @@ extension DistanceConfigurationViewController: UITableViewDelegate {
                 }
             } else {
                 if let theCell = cell as? DistanceFromBarycentreTableViewCell {
-                    theCell.theMarker.initWith(edgePin:findMe.edgePoints[indexPath.row - 1])
+                    theCell.theMarker.initWith(edgePin:TriangulationDS.sharedInstance.edgePoints[indexPath.row - 1])
                 }
             }
         case SectionId.trianglePoints:
@@ -160,6 +176,7 @@ extension DistanceConfigurationViewController: UITableViewDelegate {
         }
     }
 }
+
 extension DistanceConfigurationViewController: UITableViewDataSource {
     
     struct SectionId {
@@ -169,17 +186,23 @@ extension DistanceConfigurationViewController: UITableViewDataSource {
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-       return findMe.center != nil ? 3 : 1
+        if TriangulationDS.sharedInstance.trianglePoints.count > 0 {
+            return 3
+        } else if TriangulationDS.sharedInstance.center != nil {
+                return 2
+        } else {
+            return 1
+        }
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         switch section {
         case SectionId.edgePoints:
-            return "Source Points"
+            return NSLocalizedString("Section_SourcePoints", comment: "")
         case SectionId.triangulationResult:
-            return "Triangulation Result"
+            return NSLocalizedString("Section_TriangulationResult", comment: "")
         case SectionId.trianglePoints:
-             return "Triangle Points"
+             return NSLocalizedString("Section_TriangleCoordinates", comment: "")
         default:
             return "Unknown section"
             
@@ -189,11 +212,11 @@ extension DistanceConfigurationViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
         case SectionId.edgePoints:
-            return findMe.edgePoints.count
+            return TriangulationDS.sharedInstance.edgePoints.count
         case SectionId.triangulationResult:
             return 4
         case SectionId.trianglePoints:
-            return 3
+            return TriangulationDS.sharedInstance.trianglePoints.count
         default:
             return 0
             
@@ -212,30 +235,24 @@ extension DistanceConfigurationViewController: UITableViewDataSource {
         switch indexPath.section {
         case SectionId.edgePoints:
             if let cell = theTableView.dequeueReusableCell(withIdentifier: CellId.DistanceConfigurationCellId, for: indexPath) as? DistanceConfigurationTableViewCell {
-                cell.configure(edgePin:findMe.edgePoints[indexPath.row], index:indexPath.row, textDelegate:self)
-               // cell.configure(edgePin:findMe.edgePoints[indexPath.row], index:indexPath.row, textDelegate:self)
+                cell.configure(edgePin:TriangulationDS.sharedInstance.edgePoints[indexPath.row], index:indexPath.row, textDelegate:self)
                 return cell
             }
         case SectionId.triangulationResult:
             if indexPath.row == 0 {
                 if let cell = theTableView.dequeueReusableCell(withIdentifier: CellId.CenterCellId, for:indexPath) as? CenterTableViewCell {
-                    cell.configure(coordinate:findMe.center!.coordinate)
+                    cell.configure(coordinate:TriangulationDS.sharedInstance.center!.coordinate)
                     return cell
                 }
             } else {
                 if let cell = theTableView.dequeueReusableCell(withIdentifier: CellId.DistanceFromBarycentreCellId, for: indexPath) as? DistanceFromBarycentreTableViewCell {
-                    cell.configure(edgePin: findMe.edgePoints[indexPath.row - 1], center: findMe.center!)
+                    cell.configure(edgePin: TriangulationDS.sharedInstance.edgePoints[indexPath.row - 1], center: TriangulationDS.sharedInstance.center!)
                     return cell
                 }
             }
         case SectionId.trianglePoints:
             if let cell = theTableView.dequeueReusableCell(withIdentifier: CellId.TriangleCellId, for: indexPath) as? DistanceTriangleTableViewCell {
-                if let point = findMe.trianglePointFor(index:indexPath.row) {
-                    cell.configure(point:point)
-                } else {
-                    cell.configure(error: NSLocalizedString("Unknown_Error", comment: ""))
-                }
-                
+                cell.configure(point:TriangulationDS.sharedInstance.trianglePoints[indexPath.row])
                 return cell
             }
         default:

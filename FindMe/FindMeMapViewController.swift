@@ -15,9 +15,6 @@ class FindMeMapViewController: UIViewController {
     
     static var sharedInstance:FindMeMapViewController!
     
-    var findMe = FindMeItem.sharedInstance
-    var centerPin: CenterPin? = nil
-    
     @IBOutlet weak var theMapView: MKMapView! {
         didSet {
             theMapView.delegate = self
@@ -50,12 +47,16 @@ class FindMeMapViewController: UIViewController {
     }
     
 
-    private let renderingColors = [UIColor.blue, UIColor.red, UIColor.darkGray]
+    private let renderingColors = [UIColor.blue, UIColor.red, UIColor.brown]
     
+    // Add a new EdgePin when the user has done a long pressure on the Map
+    // Max 3 EdgePin can be added
+    // The Map is refreshed with the new content
     @IBAction func handleLongPressGesture(_ sender: UILongPressGestureRecognizer) {
         switch sender.state {
         case .ended:
-            if findMe.edgePoints.count == 3 {
+            // We have already the max number of EdgePin, so we inform the user
+            if TriangulationDS.sharedInstance.edgePoints.count == 3 {
                 let alertController = UIAlertController(title: NSLocalizedString("Warning", comment: ""),
                                                         message: NSLocalizedString("Warning_Too_Many_EdgePin", comment: ""),
                                                         preferredStyle: .alert)
@@ -67,25 +68,30 @@ class FindMeMapViewController: UIViewController {
             }
             
             let newSelectedCoordinates = theMapView.convert(sender.location(in: theMapView), toCoordinateFrom: theMapView)
-
             
-            let newEdgePin = EdgePin(edgeCoordinate: newSelectedCoordinates, color:renderingColors[findMe.edgePoints.count], index:findMe.edgePoints.count + 1)
-            findMe.append(point:newEdgePin)
+            // Create the new EdgePin and add it in the datasource
+            let newEdgePin = EdgePin(edgeCoordinate: newSelectedCoordinates,
+                                     color:renderingColors[TriangulationDS.sharedInstance.edgePoints.count],
+                                     index:TriangulationDS.sharedInstance.edgePoints.count + 1)
+            
+            TriangulationDS.sharedInstance.append(point:newEdgePin)
 
             theMapView.addAnnotation(newEdgePin)
             theMapView.add(newEdgePin.circle)
             
+            // Geocode the address and refresh the annotation on the map with the address
             let geoCoder = CLGeocoder()
             let location = CLLocation(latitude: newSelectedCoordinates.latitude, longitude: newSelectedCoordinates.longitude)
             geoCoder.reverseGeocodeLocation(location) { placemarks, error in
                 if error == nil, let thePlacemarks = placemarks, thePlacemarks.count > 0 {
                     newEdgePin.placemark = thePlacemarks[0]
-                    self.updateMapDisplay()
+                    self.theMapView.removeAnnotation(newEdgePin)
+                    self.theMapView.addAnnotation(newEdgePin)
                 }
             }
             
-            if findMe.edgePoints.count == 3 {
-                updateMapDisplay()
+            if TriangulationDS.sharedInstance.edgePoints.count == 3 {
+                refreshMapContent()
             }
             
         default:
@@ -93,46 +99,50 @@ class FindMeMapViewController: UIViewController {
         }
     }
     
-    
-    func updateMapDisplay() {
+    // refresh the whole content of the map
+    func refreshMapContent(updateCenter:Bool = true) {
         
+        // Remove all Overlays and Annotation from the Map
         theMapView.removeOverlays(theMapView.overlays)
         theMapView.removeAnnotations(theMapView.annotations)
         
-        _ = findMe.updateCenter(sourceViewController: self)
+        // Recompute the center (and then the triangle)
+        if updateCenter {
+            _ = TriangulationDS.sharedInstance.updateCenter()
+        }
         
+        // Create all overlays and annotation to be displayed
         var newOverlays = [MKOverlay]()
         var newAnnotations = [MKAnnotation]()
-        for edgePoint in findMe.edgePoints {
+        
+        for edgePoint in TriangulationDS.sharedInstance.edgePoints {
             newOverlays.append(edgePoint.circle)
             newAnnotations.append(edgePoint)
         }
         
-        if let center = findMe.center {
-            centerPin = CenterPin(centerCoordinate:center.coordinate)
-            newAnnotations.append(centerPin!)
+        // Add the Center and a polyline from all edges
+        if let center = TriangulationDS.sharedInstance.center {
+            let centerPin = CenterPin(centerCoordinate:center.coordinate)
+            newAnnotations.append(centerPin)
             
             let target = CLLocation(latitude: center.coordinate.latitude, longitude: center.coordinate.longitude)
             let source = CLLocation(latitude: theMapView.centerCoordinate.latitude, longitude:theMapView.centerCoordinate.longitude)
-            let withAnimation = target.distance(from: source) <= 1000000 ? true : false
-            theMapView.setCenter(center.coordinate, animated: withAnimation)
-        }
-        
-        
-        if let pmin = findMe.pmin, let qmin = findMe.qmin, let rmin = findMe.rmin {
-            newAnnotations.append(TrianglePin(centerCoordinate:pmin.coordinate))
-            newAnnotations.append(TrianglePin(centerCoordinate:qmin.coordinate))
-            newAnnotations.append(TrianglePin(centerCoordinate:rmin.coordinate))
-
-            // WARNING: Check how unsafeMutablePointer are working
-            let pt = UnsafeMutablePointer<CLLocationCoordinate2D>.allocate(capacity: 3)
-            let coordinatesTriangle = [pmin.coordinate, qmin.coordinate, rmin.coordinate]
-            for i in 0..<3 {
-                pt[i] = coordinatesTriangle[i]
-            }
             
-            newOverlays.append(MKPolygon(coordinates: pt, count: 3))
-            pt.deallocate(capacity: 3)
+            for edgePoint in TriangulationDS.sharedInstance.edgePoints {
+                let polyline = EdgeToCenterPolyline.edgeToCenter(edgePin: edgePoint,
+                                                                 centerPin: centerPin)
+                newOverlays.append(polyline)
+            }
+        }
+    
+        // Draw the triangle only if we have 3 points
+        if TriangulationDS.sharedInstance.trianglePoints.count == 3 {
+            var coordinatesTriangle = [CLLocationCoordinate2D]()
+            for currentTrianglePoint in TriangulationDS.sharedInstance.trianglePoints {
+                newAnnotations.append(TrianglePin(centerCoordinate:currentTrianglePoint.coordinate))
+                coordinatesTriangle.append(currentTrianglePoint.coordinate)
+            }
+            newOverlays.append(MKPolygon(coordinates: coordinatesTriangle, count: 3))
         }
 
         theMapView.addAnnotations(newAnnotations)
@@ -150,8 +160,8 @@ extension FindMeMapViewController: MKMapViewDelegate {
         static let trianglePin = "TrianglePin"
     }
     
+    // Dequeue Map annotation
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-
          if let edgeAnnotation = annotation as? EdgePin {
             return mapView.dequeueReusableAnnotationView(withIdentifier: TriangulationAnnotation.edgePin, for: edgeAnnotation) as! EdgePinViewAnnotation
         } else if let centerAnnotation = annotation as? CenterPin {
@@ -162,7 +172,7 @@ extension FindMeMapViewController: MKMapViewDelegate {
         return nil
     }
     
-    
+    // Renderer for the overlays (circle, polyline and polygon)
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
         if let circleOverlay = overlay as? EdgeCircle {
             let circleRenderer  = MKCircleRenderer(circle: circleOverlay)
@@ -173,6 +183,13 @@ extension FindMeMapViewController: MKMapViewDelegate {
             polygonRenderer.fillColor = UIColor.black.withAlphaComponent(0.3)
             polygonRenderer.strokeColor = UIColor.black
             return polygonRenderer
+        } else if let polyline = overlay as? EdgeToCenterPolyline {
+            let polylineRenderer = MKPolylineRenderer(overlay: polyline)
+            polylineRenderer.strokeColor = polyline.edge.renderingColor
+            polylineRenderer.lineDashPattern = [20,10]
+            polylineRenderer.lineJoin = .round
+            polylineRenderer.lineCap = .square
+            return polylineRenderer
         } else {
             return MKOverlayRenderer()
         }
@@ -190,8 +207,24 @@ extension FindMeMapViewController: MKMapViewDelegate {
                     }
                     // Update the Map even when the GeoCoder has failed because we need to redraw the circle and others
                     // Map infos with the new GeoLocation
-                    self.updateMapDisplay()
+                    self.refreshMapContent()
                 }
+            } else if let newCenterPin = view.annotation as? CenterPin {
+                
+                // The centerPin has been moved:
+                //  - Update the distance from the EdgePint
+                //  - Update the center in the datasource
+                //  - Reset triangle in the datasource
+                //  - Refresh the map with the updated datasource
+                for currentEdgePin in TriangulationDS.sharedInstance.edgePoints {
+                    let edgeLocation = CLLocation(latitude: currentEdgePin.coordinate.latitude, longitude: currentEdgePin.coordinate.longitude)
+                    currentEdgePin.distance = edgeLocation.distance(from: CLLocation(latitude: newCenterPin.coordinate.latitude,
+                                                                                     longitude: newCenterPin.coordinate.longitude)) / 1000.0
+                }
+                let newCenter = Point(name: "Manual Center", coordinate: newCenterPin.coordinate)
+                TriangulationDS.sharedInstance.center = newCenter
+                TriangulationDS.sharedInstance.trianglePoints.removeAll()
+                refreshMapContent(updateCenter: false)
             }
         default:
             NSLog("\(#function) something is happening")

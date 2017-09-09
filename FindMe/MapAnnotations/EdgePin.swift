@@ -15,8 +15,15 @@ class EdgePin: NSObject, MKAnnotation {
  
     var placemark:CLPlacemark? = nil
     var distance = 100.0 // 100km is the default value
+    var distanceInMeter: Double {
+        return distance * 1000
+    }
     var address:String {
         return getAddress()
+    }
+    
+    var point:Point {
+        return Point(name: "Point\(index)", coordinate: coordinate)
     }
     
     let index:Int
