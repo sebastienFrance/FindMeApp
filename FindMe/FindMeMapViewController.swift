@@ -47,7 +47,7 @@ class FindMeMapViewController: UIViewController {
     }
     
 
-    private let renderingColors = [UIColor.blue, UIColor.red, UIColor.brown]
+    private let renderingColors = [UIColor.blue, UIColor.red, UIColor.orange]
     
     // Add a new EdgePin when the user has done a long pressure on the Map
     // Max 3 EdgePin can be added
