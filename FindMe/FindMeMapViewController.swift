@@ -125,8 +125,6 @@ class FindMeMapViewController: UIViewController {
             let centerPin = CenterPin(centerCoordinate:center.coordinate)
             newAnnotations.append(centerPin)
             
-            let target = CLLocation(latitude: center.coordinate.latitude, longitude: center.coordinate.longitude)
-            let source = CLLocation(latitude: theMapView.centerCoordinate.latitude, longitude:theMapView.centerCoordinate.longitude)
             
             for edgePoint in TriangulationDS.sharedInstance.edgePoints {
                 let polyline = EdgeToCenterPolyline.edgeToCenter(edgePin: edgePoint,
