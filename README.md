@@ -1,4 +1,4 @@
-# FindMeApp
+# FindMe App
 
 FindMe is a simple iPhone App to find a place based on 3 locations and distances. Just done for fun with a friend!
 
